@@ -16,27 +16,11 @@ const char ssid[] = "SSID";
 const char password[] = "パスワード";
 
 void setup() {
-  Serial.begin(115200);
+ Serial.begin(115200);
   //WiFi接続
-  Serial.print("Connecting to");
-  Serial.print(ssid);
-  WiFi.begin(ssid, password);
-
-  while (WiFi.status() != WL_CONNECTED) {
-    delay(500);
-    int i = 0;
-    Serial.print(".");
-    //通信状況が悪い時リスタート
-    if (++i > 30) {
-      Serial.print("リスタート");
-      esp_deep_sleep_enable_timer_wakeup(1 * 1000 * 1000);
-      esp_deep_sleep_start();
-    }
-  }
-
-  Serial.println("Connected");
+  Wifi_Set(ssid,password);
   //日本時間の設定
-  configTime( JST, 0, "ntp.nict.jp","time.google.com","ntp.jst.mfeed.ad.jp");
+  configTime( JST, 0, "ntp.nict.jp", "time.google.com", "ntp.jst.mfeed.ad.jp");
   configTzTime("JST-9", "ntp.nict.jp", "time.google.com", "ntp.jst.mfeed.ad.jp");
 }
 
