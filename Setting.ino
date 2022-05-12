@@ -6,6 +6,11 @@ void setUp(const int ledPin){
   pinMode(ledPin, OUTPUT);
 }
 
+
+/* 現在の時刻を取得
+ * return currentTime(時)
+ */
+
 unsigned long getTime(){
   time_t t;
   struct tm *tm;
@@ -16,6 +21,10 @@ unsigned long getTime(){
   return currentTime;
 }
 
+/*
+ * ESP32のMacアドレスをIDに変換する
+ * return chipId  
+ */
 
 uint32_t getChipId(){
   uint32_t chipId = 0;
@@ -24,6 +33,12 @@ uint32_t getChipId(){
   }
   return chipId;
 }
+
+/*
+ * ESP32をWiFiに接続する関数
+ * const char *ssid  
+ * const char *password   
+ */
 
 void Wifi_Set(const char *ssid,const char *password){
   //WiFi接続
