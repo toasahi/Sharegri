@@ -15,6 +15,12 @@ WiFiClientSecure client;
 const char ssid[] = "SSID";
 const char password[] = "パスワード";
 
+//Type
+typedef enum{
+  OPEN,
+  CLOSE
+}DOOR_STATUS;
+
 void setup() {
  Serial.begin(115200);
   //WiFi接続
