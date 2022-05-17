@@ -13,8 +13,8 @@ JSONVar userStatus;
 JSONVar keys;
 
 //WiFi設定
-const char ssid[] = "C0p2Ec2-WLAN";
-const char password[] = "4Emah5LdS";
+const char ssid[] = "";
+const char password[] = "";
 
 //Pin配置
 const int ledPin = 5;
