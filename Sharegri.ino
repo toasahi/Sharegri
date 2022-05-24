@@ -110,6 +110,7 @@ void loop() {
     1時間おき
     畑の一つ一つ
   */
+  
   if(timeStatus != getTime()){
     timeStatus = getTime();
     Serial.println(timeStatus);
