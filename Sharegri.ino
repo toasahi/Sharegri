@@ -19,6 +19,9 @@ const char password[] = "";
 //Pin配置
 const int ledPin = 5;
 
+const char host[] = "webページ";
+int timeStatus = 0;
+
 //SPI通信用変数設定
 const uint8_t SCLK_bme280 = 14; //クロック入力
 const uint8_t MOSI_bme280 = 13; //マスター(ESP32):出力,スレーブ(BME280):入力
@@ -51,10 +54,45 @@ void setup() {
   //日本時間の設定
   configTime( JST, 0, "ntp.nict.jp", "time.google.com", "ntp.jst.mfeed.ad.jp");
   configTzTime("JST-9", "ntp.nict.jp", "time.google.com", "ntp.jst.mfeed.ad.jp");
+  timeStatus = getTime();
+}
+
+void sendPostMoisture() {
+  String url = "";
+  if (client.connect(host, 443)) {
+    Serial.println("Connect");
+    int bmeData[3];
+    getBmeData(bmeData);
+    String data;
+//    data += "moisture=";
+//    data += readSoil(soilPin, soilPower);
+//    data += "&temperature=";
+//    data += bmeData[0];
+//    data += "&humidity=";
+//    data += bmeData[1];
+//    data += "&air_pressure=";
+//    data += bmeData[2];
+//    data += "&chip_id=";
+//    data += getChipId();
+    client.println("POST " + url + "?" + data + " HTTP/1.1");
+    client.println("Host: " + (String)host);
+    client.println("Content-Type: application/x-www-form-urlencoded");
+    client.println("User-Agent: ESP8266/1.0");
+    client.print("Content-Length: ");
+    client.println(data.length());
+    client.println("Connection: close");
+    client.println();
+    client.println(data);
+
+    client.stop();
+    delay(1000);
+  } else {
+    Serial.println("Client Connect 失敗");
+  }
 }
 
 void loop() {
-
+  
   /*ユーザーの操作
     どの畑に水やりをするのか or 水やりを止めるか
   */
@@ -66,12 +104,15 @@ void loop() {
       Serial.println("閉鎖");
     }
   }
-
+  
   /*データの送信
     畑の状態を送信する
     1時間おき
     畑の一つ一つ
   */
-
-
+  if(timeStatus != getTime()){
+    timeStatus = getTime();
+    Serial.println(timeStatus);
+  }
+  delay(5000);
 }
