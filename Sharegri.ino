@@ -16,8 +16,16 @@ JSONVar keys;
 const char ssid[] = "";
 const char password[] = "";
 
+//Line Notify
+const char* lineHost = "notify-api.line.me";
+const char* token = "";
+const char* message = "Push!";
+
+
 //Pin配置
 const int ledPin = 5;
+int soilPin = A0; //土壌センサー制御ピン
+int soilPower = 7; //土壌水分用変数
 
 const char host[] = "webページ";
 int timeStatus = 0;
@@ -64,16 +72,16 @@ void sendPostMoisture() {
     int bmeData[3];
     getBmeData(bmeData);
     String data;
-//    data += "moisture=";
-//    data += readSoil(soilPin, soilPower);
-//    data += "&temperature=";
-//    data += bmeData[0];
-//    data += "&humidity=";
-//    data += bmeData[1];
-//    data += "&air_pressure=";
-//    data += bmeData[2];
-//    data += "&chip_id=";
-//    data += getChipId();
+    data += "moisture=";
+    data += readSoil(soilPin);
+    data += "&temperature=";
+    data += bmeData[0];
+    data += "&humidity=";
+    data += bmeData[1];
+    data += "&air_pressure=";
+    data += bmeData[2];
+    data += "&chip_id=";
+    data += getChipId();
     client.println("POST " + url + "?" + data + " HTTP/1.1");
     client.println("Host: " + (String)host);
     client.println("Content-Type: application/x-www-form-urlencoded");
@@ -89,6 +97,41 @@ void sendPostMoisture() {
   } else {
     Serial.println("Client Connect 失敗");
   }
+}
+
+void sendLineNotify(){
+
+  client.setInsecure();
+  
+  Serial.println("Try");
+  
+  //LineのAPIサーバにSSL接続（ポート443:https）
+  if (!client.connect(lineHost, 443)) {
+    Serial.println("Connection failed");
+    return;
+  }
+  
+   String query = String("message=") + String(message);
+   String request = String("") +
+                 "POST /api/notify HTTP/1.1\r\n" +
+                 "Host: " + lineHost + "\r\n" +
+                 "Authorization: Bearer " + token + "\r\n" +
+                 "Content-Length: " + String(query.length()) +  "\r\n" + 
+                 "Content-Type: application/x-www-form-urlencoded\r\n\r\n" +
+                  query + "\r\n";
+    client.print(request);
+
+    while (client.connected()) {
+      String line = client.readStringUntil('\n');
+      Serial.println(line);
+      if (line == "\r") {
+        break;
+      }
+    }
+
+    String line = client.readStringUntil('\n');
+    Serial.println(line);
+    delay(500);
 }
 
 void loop() {
@@ -110,10 +153,10 @@ void loop() {
     1時間おき
     畑の一つ一つ
   */
-  
   if(timeStatus != getTime()){
     timeStatus = getTime();
     Serial.println(timeStatus);
+    sendLineNotify();
   }
   delay(5000);
 }
