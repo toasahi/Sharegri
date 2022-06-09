@@ -26,6 +26,7 @@ const char* message = "Push!";
 const int ledPin = 5;
 int soilPin = A0; //土壌センサー制御ピン
 int soilPower = 7; //土壌水分用変数
+int motPin = 16; //モーター制御ピン
 
 const char host[] = "webページ";
 int timeStatus = 0;
