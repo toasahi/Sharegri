@@ -54,6 +54,7 @@ typedef enum {
 
 void setup() {
   Serial.begin(115200);
+  pinMode(motPin, OUTPUT);
   userStatus =  JSON.parse("{\"user1\":\"ok\",\"user2\":\"no\"}");
   keys = userStatus.keys();
   //WiFi接続
@@ -100,9 +101,7 @@ void sendPostMoisture() {
 }
 
 void sendLineNotify(){
-
   client.setInsecure();
-  
   Serial.println("Try");
   
   //LineのAPIサーバにSSL接続（ポート443:https）
@@ -143,8 +142,10 @@ void loop() {
     String val = (const char*)userStatus[keys[i]];
     if(val == "ok"){
       Serial.println("開放");
+      digitalWrite(motPin, HIGH);
     }else{
       Serial.println("閉鎖");
+      digitalWrite(motPin, LOW);
     }
   }
   
